@@ -1,0 +1,28 @@
+.accessible-modal {
+  margin: auto;
+  width: min(32rem, calc(100vw - 2rem));
+  max-height: calc(100dvh - 2rem);
+  overflow: auto;
+  box-sizing: border-box;
+  border: 1px solid #64748b;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  color: #0f172a;
+  background: #fff;
+  line-height: 1.5;
+}
+
+.accessible-modal::backdrop { background: rgb(0 0 0 / 60%); }
+.accessible-modal h2 { font-size: 1.5rem; font-weight: 700; }
+.accessible-modal > * + * { margin-top: 1rem; }
+.accessible-modal button {
+  min-width: 44px;
+  min-height: 44px;
+  border: 1px solid currentColor;
+  border-radius: 0.25rem;
+  padding: 0.5rem 1rem;
+}
+.accessible-modal :focus-visible {
+  outline: 3px solid #1d4ed8;
+  outline-offset: 3px;
+}

@@ -1,0 +1,13 @@
+html.light,
+html.light body {
+  color-scheme: light;
+  color: #000;
+  background-color: #fff;
+}
+
+html.dark,
+html.dark body {
+  color-scheme: dark;
+  color: #fff;
+  background-color: #020617;
+}

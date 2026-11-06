@@ -1,0 +1,71 @@
+name: Component quality
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: quality-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: ${{ matrix.suite }}
+    runs-on: windows-2025
+    timeout-minutes: 10
+
+    strategy:
+      fail-fast: false
+      matrix:
+        suite: [a11y, visual]
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          package-manager-cache: false
+
+      - name: Cache node_modules
+        id: dependencies
+        uses: actions/cache@v6
+        with:
+          path: node_modules
+          key: >-
+            ${{ runner.os }}-${{ runner.arch }}-node24-modules-v1-${{
+            hashFiles('package-lock.json') }}
+
+      - name: Install dependencies
+        if: steps.dependencies.outputs.cache-hit != 'true'
+        run: npm ci
+
+      - name: Install Chromium
+        run: npx playwright install chromium
+
+      - name: Run accessibility tests
+        if: matrix.suite == 'a11y'
+        run: npm run test:a11y
+
+      - name: Build Storybook
+        if: matrix.suite == 'visual'
+        run: npm run build-storybook
+
+      - name: Run visual tests
+        if: matrix.suite == 'visual'
+        run: npm run test:visual
+
+      - name: Upload visual report
+        if: always() && matrix.suite == 'visual'
+        uses: actions/upload-artifact@v7
+        with:
+          name: visual-report
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 14
